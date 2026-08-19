@@ -1,0 +1,38 @@
+# Python / Jupyter
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.venv/
+venv/
+.env
+.DS_Store
+Thumbs.db
+
+# Raw and generated data (not redistributed)
+data/raw/*
+!data/raw/README.md
+data/interim/*
+!data/interim/README.md
+
+# Generated analysis products
+results/*
+!results/README.md
+!results/reference/
+!results/reference/**
+figures/*
+!figures/README.md
+!figures/reference/
+!figures/reference/**
+tables/*
+!tables/README.md
+!tables/reference/
+!tables/reference/**
+exports/*
+checkpoints_*/
+
+# Large HSI files
+*.bin
+*.hdr
+*.zip
+*.tar
+*.torrent
