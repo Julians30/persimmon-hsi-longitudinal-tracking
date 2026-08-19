@@ -1,0 +1,42 @@
+{
+  "project": "Kaki_DeepHS_StorageDays",
+  "notebook": "10_kaki_final_classical_ml_benchmark",
+  "run_signature": "final_classical_benchmark_v1",
+  "run_id": "10_kaki_final_classical_ml_benchmark_20260819_060842",
+  "timestamp": "2026-08-19T06:08:42",
+  "python": "3.12.13 (main, Mar  4 2026, 09:23:07) [GCC 11.4.0]",
+  "platform": "Linux-6.6.122+-x86_64-with-glibc2.35",
+  "numpy": "2.0.2",
+  "pandas": "2.2.3",
+  "camera": "VIS_COR",
+  "algorithms": [
+    "Ridge",
+    "PLSR",
+    "SVR_RBF",
+    "RandomForest",
+    "ExtraTrees"
+  ],
+  "n_algorithms": 5,
+  "reported_metrics": [
+    "mae",
+    "rmse",
+    "r2",
+    "spearman_rho",
+    "within_1_day_accuracy",
+    "fruit_balanced_mae",
+    "day_balanced_mae",
+    "bias"
+  ],
+  "primary_metric": "fruit_balanced_mae",
+  "tasks": [
+    "absolute",
+    "delta_snv"
+  ],
+  "random_seed": 20260818,
+  "bootstrap_reps": 5000,
+  "outer_split_sha256": "56013aaf85c546c8ac2df1d7db0552918a8687a5e510e42c73e099eb5fef8973",
+  "inner_split_sha256": "785adc00e1a2f8a2fc6800a921390a0eaaf87b2cfc82cb04d892ab1ca3814e0b",
+  "raw_hsi_included": false,
+  "external_campaign_validation": false,
+  "classical_model_phase": "final_benchmark"
+}

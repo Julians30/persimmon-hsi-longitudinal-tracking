@@ -1,3 +1,4 @@
+\
 #!/usr/bin/env python3
 """Static pre-publication checks for the reproducibility repository."""
 
@@ -45,12 +46,15 @@ def main() -> int:
         path = NOTEBOOK_DIR / name
         if not path.exists():
             continue
+
         nb = json.loads(path.read_text(encoding="utf-8"))
         for i, cell in enumerate(nb.get("cells", [])):
             source = "".join(cell.get("source", []))
+
             for label, pattern in FORBIDDEN_PATTERNS.items():
                 if re.search(pattern, source, flags=re.I | re.S):
                     errors.append(f"{name}, cell {i}: {label}")
+
             if cell.get("cell_type") == "code":
                 if cell.get("outputs"):
                     errors.append(f"{name}, cell {i}: notebook output was not stripped")
@@ -73,7 +77,9 @@ def main() -> int:
     forbidden_raw_suffixes = {".zip", ".bin", ".hdr", ".torrent"}
     for path in raw_dir.rglob("*"):
         if path.is_file() and path.suffix.lower() in forbidden_raw_suffixes:
-            errors.append(f"Large/raw file should not be committed: {path.relative_to(ROOT)}")
+            errors.append(
+                f"Large/raw file should not be committed: {path.relative_to(ROOT)}"
+            )
 
     if errors:
         print("Repository verification FAILED:\n")

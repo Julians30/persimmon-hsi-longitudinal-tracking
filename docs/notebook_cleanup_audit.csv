@@ -1,0 +1,12 @@
+notebook,n_cells,n_code_cells,outputs_stripped,execution_counts_cleared,hardcoded_drive_absent,colab_import_absent,chat_instruction_absent,syntax_compile_ok
+00_data_audit.ipynb,30,14,True,True,True,True,True,True
+01_longitudinal_eda.ipynb,49,26,True,True,True,True,True,True
+02_fruit_disjoint_baselines.ipynb,58,29,True,True,True,True,True,True
+03_session_robustness.ipynb,62,31,True,True,True,True,True,True
+04_negative_controls.ipynb,43,21,True,True,True,True,True,True
+05_wavelength_selection.ipynb,61,30,True,True,True,True,True,True
+06_virtual_sensor_design.ipynb,65,32,True,True,True,True,True,True
+07_cross_sensor_transfer.ipynb,59,29,True,True,True,True,True,True
+08_within_fruit_delta.ipynb,59,29,True,True,True,True,True,True
+09_baseline_specificity.ipynb,57,28,True,True,True,True,True,True
+10_final_ml_benchmark.ipynb,55,27,True,True,True,True,True,True

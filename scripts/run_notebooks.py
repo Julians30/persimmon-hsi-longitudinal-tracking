@@ -1,3 +1,4 @@
+\
 #!/usr/bin/env python3
 """Execute the cleaned notebooks sequentially with nbconvert."""
 
@@ -27,9 +28,24 @@ NOTEBOOKS = [
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--start", type=int, default=0, help="First notebook index to execute (default: 0).")
-    parser.add_argument("--stop", type=int, default=10, help="Last notebook index to execute, inclusive (default: 10).")
-    parser.add_argument("--timeout", type=int, default=-1, help="Per-cell timeout for nbconvert; -1 disables the timeout.")
+    parser.add_argument(
+        "--start",
+        type=int,
+        default=0,
+        help="First notebook index to execute (default: 0).",
+    )
+    parser.add_argument(
+        "--stop",
+        type=int,
+        default=10,
+        help="Last notebook index to execute, inclusive (default: 10).",
+    )
+    parser.add_argument(
+        "--timeout",
+        type=int,
+        default=-1,
+        help="Per-cell timeout for nbconvert; -1 disables the timeout.",
+    )
     args = parser.parse_args()
 
     env = os.environ.copy()
@@ -38,10 +54,12 @@ def main() -> int:
     for idx, name in enumerate(NOTEBOOKS):
         if idx < args.start or idx > args.stop:
             continue
+
         path = ROOT / "notebooks" / name
         print("=" * 80)
         print(f"Executing {idx:02d}: {path}")
         print("=" * 80)
+
         command = [
             sys.executable,
             "-m",
@@ -55,6 +73,7 @@ def main() -> int:
             str(path),
         ]
         subprocess.run(command, check=True, cwd=ROOT, env=env)
+
     return 0
 
 
