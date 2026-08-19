@@ -40,7 +40,7 @@ persimmon-hsi-longitudinal-tracking/
 ### 1. Install
 
 ```bash
-git clone YOUR_REPOSITORY_URL
+git clone https://github.com/Julians30/persimmon-hsi-longitudinal-tracking.git
 cd persimmon-hsi-longitudinal-tracking
 python -m venv .venv
 ```
