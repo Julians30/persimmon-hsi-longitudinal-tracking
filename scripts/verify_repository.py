@@ -260,6 +260,11 @@ def audit_tracked_files(errors: list[str]) -> None:
         if p.suffix.lower() in {".pem", ".key"}:
             errors.append(f"Private key material must not be tracked: {item}")
 
+        # The verifier intentionally stores the patterns it searches for, so it must not
+        # scan its own source text for those same patterns.
+        if item == "scripts/verify_repository.py":
+            continue
+
         if path.is_file() and path.stat().st_size <= 1_000_000 and (
             p.suffix.lower() in TEXT_SUFFIXES or p.name == ".gitignore"
         ):
