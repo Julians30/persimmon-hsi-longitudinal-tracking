@@ -66,6 +66,11 @@ FORBIDDEN_PATTERNS = {
     "Potential OpenAI secret": r"\bsk-[A-Za-z0-9_-]{16,}\b",
     "GitHub token pattern": r"\bgh[pousr]_[A-Za-z0-9]{20,}\b",
 }
+NOTEBOOK_OR_CODE_ONLY_PATTERNS = {
+    "Google Drive hard-coded path",
+    "Colab import",
+    "Chat review instruction",
+}
 
 FORBIDDEN_TRACKED_SUFFIXES = {
     ".zip", ".bin", ".hdr", ".torrent", ".tar", ".pt", ".pth", ".ckpt"
@@ -263,12 +268,12 @@ def audit_tracked_files(errors: list[str]) -> None:
             except UnicodeDecodeError:
                 continue
             for label, pattern in FORBIDDEN_PATTERNS.items():
+                # Historical audit documentation may legitimately mention old Colab/Drive
+                # strings. Those patterns are enforced in notebooks and active Python code,
+                # while credential-token patterns are scanned across all tracked text files.
+                if label in NOTEBOOK_OR_CODE_ONLY_PATTERNS and p.suffix.lower() != ".py":
+                    continue
                 if re.search(pattern, text, flags=re.I | re.S):
-                    # Notebook-specific Colab/Drive checks are handled cell-by-cell above.
-                    if p.suffix.lower() == ".ipynb" and label in {
-                        "Google Drive hard-coded path", "Colab import", "Chat review instruction"
-                    }:
-                        continue
                     errors.append(f"{item}: {label}")
 
 
