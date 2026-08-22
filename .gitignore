@@ -2,11 +2,21 @@
 __pycache__/
 *.py[cod]
 .ipynb_checkpoints/
+.pytest_cache/
 .venv/
 venv/
 .env
+.env.*
 .DS_Store
 Thumbs.db
+.vscode/
+.idea/
+
+# Credentials / private configuration
+config/
+secrets/
+*.pem
+*.key
 
 # Raw and generated data (not redistributed)
 data/raw/*
@@ -28,11 +38,15 @@ tables/*
 !tables/reference/
 !tables/reference/**
 exports/*
+executed_notebooks/
 checkpoints_*/
 
-# Large HSI files
+# Large HSI / model / archive files
 *.bin
 *.hdr
 *.zip
 *.tar
 *.torrent
+*.pt
+*.pth
+*.ckpt
