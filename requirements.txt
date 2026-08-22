@@ -1,5 +1,9 @@
-numpy>=1.26,<3
-pandas>=2.1,<3
+# Exact versions captured in results/reference/run_manifest.json
+numpy==2.0.2
+pandas==2.2.3
+
+# Exact historical versions were not recorded for the packages below;
+# compatible ranges are retained rather than invented.
 scipy>=1.11,<2
 scikit-learn>=1.4,<2
 matplotlib>=3.8,<4
