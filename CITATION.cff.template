@@ -7,5 +7,5 @@ date-released: YYYY-MM-DD
 authors:
   - family-names: "REPLACE_WITH_FINAL_AUTHOR"
     given-names: "REPLACE_WITH_FINAL_AUTHOR"
-repository-code: "https://github.com/REPLACE_OWNER/persimmon-hsi-longitudinal-tracking"
+repository-code: "https://github.com/Julians30/persimmon-hsi-longitudinal-tracking"
 # doi: "Add Zenodo DOI after archiving the manuscript release"
