@@ -1,18 +1,22 @@
-\
 #!/usr/bin/env python3
-"""Static pre-publication checks for the reproducibility repository."""
+"""Static pre-publication checks for the Persimmon HSI reproducibility repository."""
 
 from __future__ import annotations
 
+import csv
+import hashlib
 import json
+import py_compile
 import re
+import subprocess
 import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 NOTEBOOK_DIR = ROOT / "notebooks"
+SCRIPT_DIR = ROOT / "scripts"
 
-EXPECTED = [
+EXPECTED_NOTEBOOKS = [
     "00_data_audit.ipynb",
     "01_longitudinal_eda.ipynb",
     "02_fruit_disjoint_baselines.ipynb",
@@ -26,6 +30,35 @@ EXPECTED = [
     "10_final_ml_benchmark.ipynb",
 ]
 
+EXPECTED_SCRIPTS = [
+    "download_data.py",
+    "run_notebooks.py",
+    "verify_repository.py",
+]
+
+OUTER_SPLIT = ROOT / "data" / "splits" / "kaki_outer5_fruit_disjoint_v1.csv"
+INNER_SPLIT = ROOT / "data" / "splits" / "kaki_inner4_within_outer5_fruit_disjoint_v1.csv"
+EXPECTED_SPLIT_HASHES = {
+    OUTER_SPLIT: "56013aaf85c546c8ac2df1d7db0552918a8687a5e510e42c73e099eb5fef8973",
+    INNER_SPLIT: "785adc00e1a2f8a2fc6800a921390a0eaaf87b2cfc82cb04d892ab1ca3814e0b",
+}
+
+REQUIRED_RESULTS = [
+    ROOT / "results" / "reference" / "kaki_final_classical_ml_benchmark_summary.json",
+    ROOT / "results" / "reference" / "run_manifest.json",
+]
+REQUIRED_TABLES = [
+    ROOT / "tables" / "reference" / "10_paired_fruit_bootstrap_algorithms.csv",
+    ROOT / "tables" / "reference" / "14_best_standard_algorithm_by_task.csv",
+    ROOT / "tables" / "reference" / "15_master_algorithm_metrics_for_manuscript.csv",
+]
+REQUIRED_FIGURES = [
+    ROOT / "figures" / "reference" / "01_standard_benchmark_absolute.png",
+    ROOT / "figures" / "reference" / "01_standard_benchmark_delta_snv.png",
+    ROOT / "figures" / "reference" / "02_session_excluded_benchmark_absolute.png",
+    ROOT / "figures" / "reference" / "02_session_excluded_benchmark_delta_snv.png",
+]
+
 FORBIDDEN_PATTERNS = {
     "Google Drive hard-coded path": r"/content/drive/MyDrive",
     "Colab import": r"google\.colab",
@@ -34,23 +67,63 @@ FORBIDDEN_PATTERNS = {
     "GitHub token pattern": r"\bgh[pousr]_[A-Za-z0-9]{20,}\b",
 }
 
+FORBIDDEN_TRACKED_SUFFIXES = {
+    ".zip", ".bin", ".hdr", ".torrent", ".tar", ".pt", ".pth", ".ckpt"
+}
+TEXT_SUFFIXES = {
+    ".py", ".md", ".txt", ".yml", ".yaml", ".json", ".csv", ".cff", ".template"
+}
 
-def main() -> int:
-    errors: list[str] = []
 
+def sha256_file(path: Path, block_size: int = 1024 * 1024) -> str:
+    h = hashlib.sha256()
+    with path.open("rb") as handle:
+        while True:
+            block = handle.read(block_size)
+            if not block:
+                break
+            h.update(block)
+    return h.hexdigest()
+
+
+def read_csv_rows(path: Path) -> list[dict[str, str]]:
+    with path.open("r", encoding="utf-8", newline="") as handle:
+        return list(csv.DictReader(handle))
+
+
+def audit_notebooks(errors: list[str]) -> None:
     actual = sorted(p.name for p in NOTEBOOK_DIR.glob("*.ipynb"))
-    if actual != EXPECTED:
-        errors.append(f"Notebook list/order mismatch.\nExpected: {EXPECTED}\nActual: {actual}")
+    if actual != EXPECTED_NOTEBOOKS:
+        errors.append(
+            f"Notebook list/order mismatch. Expected {EXPECTED_NOTEBOOKS}; actual {actual}"
+        )
 
-    for name in EXPECTED:
+    tracked_notebooks = sorted(
+        p for p in subprocess.check_output(["git", "ls-files", "*.ipynb"], text=True).splitlines()
+    )
+    expected_paths = sorted(f"notebooks/{name}" for name in EXPECTED_NOTEBOOKS)
+    if tracked_notebooks != expected_paths:
+        errors.append(
+            "Tracked notebooks must exist only under notebooks/. "
+            f"Expected {expected_paths}; actual {tracked_notebooks}"
+        )
+
+    for name in EXPECTED_NOTEBOOKS:
         path = NOTEBOOK_DIR / name
         if not path.exists():
             continue
+        try:
+            nb = json.loads(path.read_text(encoding="utf-8"))
+        except Exception as exc:
+            errors.append(f"{name}: invalid notebook JSON: {exc}")
+            continue
 
-        nb = json.loads(path.read_text(encoding="utf-8"))
+        if "cells" not in nb or "nbformat" not in nb:
+            errors.append(f"{name}: invalid notebook structure")
+            continue
+
         for i, cell in enumerate(nb.get("cells", [])):
             source = "".join(cell.get("source", []))
-
             for label, pattern in FORBIDDEN_PATTERNS.items():
                 if re.search(pattern, source, flags=re.I | re.S):
                     errors.append(f"{name}, cell {i}: {label}")
@@ -65,21 +138,148 @@ def main() -> int:
                 except SyntaxError as exc:
                     errors.append(f"{name}, cell {i}: syntax error: {exc}")
 
-    required_splits = [
-        ROOT / "data" / "splits" / "kaki_outer5_fruit_disjoint_v1.csv",
-        ROOT / "data" / "splits" / "kaki_inner4_within_outer5_fruit_disjoint_v1.csv",
-    ]
-    for path in required_splits:
+
+def audit_scripts(errors: list[str]) -> None:
+    actual = sorted(p.name for p in SCRIPT_DIR.glob("*.py"))
+    if actual != sorted(EXPECTED_SCRIPTS):
+        errors.append(
+            f"Script inventory mismatch. Expected {sorted(EXPECTED_SCRIPTS)}; actual {actual}"
+        )
+
+    for name in EXPECTED_SCRIPTS:
+        path = SCRIPT_DIR / name
+        if not path.exists():
+            continue
+        try:
+            py_compile.compile(str(path), doraise=True)
+        except Exception as exc:
+            errors.append(f"Python syntax error in {path.relative_to(ROOT)}: {exc}")
+        first_line = path.read_text(encoding="utf-8").splitlines()[0] if path.stat().st_size else ""
+        if first_line != "#!/usr/bin/env python3":
+            errors.append(f"Invalid script header in {path.relative_to(ROOT)}")
+
+
+def audit_splits(errors: list[str]) -> None:
+    for path, expected_hash in EXPECTED_SPLIT_HASHES.items():
         if not path.exists():
             errors.append(f"Missing frozen split: {path.relative_to(ROOT)}")
-
-    raw_dir = ROOT / "data" / "raw"
-    forbidden_raw_suffixes = {".zip", ".bin", ".hdr", ".torrent"}
-    for path in raw_dir.rglob("*"):
-        if path.is_file() and path.suffix.lower() in forbidden_raw_suffixes:
+            continue
+        observed_hash = sha256_file(path)
+        if observed_hash != expected_hash:
             errors.append(
-                f"Large/raw file should not be committed: {path.relative_to(ROOT)}"
+                f"Frozen split hash mismatch for {path.relative_to(ROOT)}: "
+                f"expected {expected_hash}, got {observed_hash}"
             )
+
+    if not OUTER_SPLIT.exists() or not INNER_SPLIT.exists():
+        return
+
+    outer_rows = read_csv_rows(OUTER_SPLIT)
+    inner_rows = read_csv_rows(INNER_SPLIT)
+
+    outer_fruits = [int(row["fruit_id"]) for row in outer_rows]
+    if len(outer_rows) != 40 or len(set(outer_fruits)) != 40 or set(outer_fruits) != set(range(1, 41)):
+        errors.append("Outer split must contain each physical fruit ID 1..40 exactly once")
+
+    outer_by_fold: dict[int, set[int]] = {}
+    for row in outer_rows:
+        fold = int(row["outer_fold"])
+        outer_by_fold.setdefault(fold, set()).add(int(row["fruit_id"]))
+    if set(outer_by_fold) != set(range(5)):
+        errors.append(f"Outer split folds must be 0..4; got {sorted(outer_by_fold)}")
+    for fold in range(5):
+        if len(outer_by_fold.get(fold, set())) != 8:
+            errors.append(f"Outer fold {fold} must contain 8 test fruits")
+
+    all_fruits = set(range(1, 41))
+    for outer_fold in range(5):
+        rows = [row for row in inner_rows if int(row["outer_fold"]) == outer_fold]
+        development_fruits = {int(row["fruit_id"]) for row in rows}
+        held_out = outer_by_fold.get(outer_fold, set())
+        expected_development = all_fruits - held_out
+        if development_fruits != expected_development:
+            errors.append(
+                f"Inner split for outer fold {outer_fold} does not exactly match the 32 non-test fruits"
+            )
+        inner_by_fold: dict[int, set[int]] = {}
+        for row in rows:
+            inner_by_fold.setdefault(int(row["inner_fold"]), set()).add(int(row["fruit_id"]))
+        if set(inner_by_fold) != set(range(4)):
+            errors.append(f"Inner folds for outer fold {outer_fold} must be 0..3")
+        for inner_fold in range(4):
+            if len(inner_by_fold.get(inner_fold, set())) != 8:
+                errors.append(
+                    f"Outer fold {outer_fold}, inner fold {inner_fold} must contain 8 fruits"
+                )
+        if held_out & development_fruits:
+            errors.append(f"Outer-test fruit leakage detected for outer fold {outer_fold}")
+
+
+def audit_reference_outputs(errors: list[str]) -> None:
+    for path in REQUIRED_RESULTS:
+        if not path.exists():
+            errors.append(f"Missing reference result: {path.relative_to(ROOT)}")
+            continue
+        try:
+            json.loads(path.read_text(encoding="utf-8"))
+        except Exception as exc:
+            errors.append(f"Invalid JSON in {path.relative_to(ROOT)}: {exc}")
+
+    for path in REQUIRED_TABLES:
+        if not path.exists() or path.stat().st_size == 0:
+            errors.append(f"Missing/empty reference table: {path.relative_to(ROOT)}")
+
+    png_magic = b"\x89PNG\r\n\x1a\n"
+    for path in REQUIRED_FIGURES:
+        if not path.exists():
+            errors.append(f"Missing reference figure: {path.relative_to(ROOT)}")
+            continue
+        with path.open("rb") as handle:
+            if handle.read(8) != png_magic:
+                errors.append(f"Invalid PNG signature: {path.relative_to(ROOT)}")
+
+
+def audit_tracked_files(errors: list[str]) -> None:
+    tracked = subprocess.check_output(["git", "ls-files"], text=True).splitlines()
+    for item in tracked:
+        path = ROOT / item
+        p = Path(item)
+        lower_parts = {part.lower() for part in p.parts}
+
+        if p.suffix.lower() in FORBIDDEN_TRACKED_SUFFIXES:
+            errors.append(f"Large/private artifact must not be tracked: {item}")
+        if p.name.lower().startswith(".env"):
+            errors.append(f"Environment secret file must not be tracked: {item}")
+        if "secrets" in lower_parts or "config" in lower_parts:
+            errors.append(f"Private configuration directory must not be tracked: {item}")
+        if p.suffix.lower() in {".pem", ".key"}:
+            errors.append(f"Private key material must not be tracked: {item}")
+
+        if path.is_file() and path.stat().st_size <= 1_000_000 and (
+            p.suffix.lower() in TEXT_SUFFIXES or p.name == ".gitignore"
+        ):
+            try:
+                text = path.read_text(encoding="utf-8")
+            except UnicodeDecodeError:
+                continue
+            for label, pattern in FORBIDDEN_PATTERNS.items():
+                if re.search(pattern, text, flags=re.I | re.S):
+                    # Notebook-specific Colab/Drive checks are handled cell-by-cell above.
+                    if p.suffix.lower() == ".ipynb" and label in {
+                        "Google Drive hard-coded path", "Colab import", "Chat review instruction"
+                    }:
+                        continue
+                    errors.append(f"{item}: {label}")
+
+
+def main() -> int:
+    errors: list[str] = []
+
+    audit_notebooks(errors)
+    audit_scripts(errors)
+    audit_splits(errors)
+    audit_reference_outputs(errors)
+    audit_tracked_files(errors)
 
     if errors:
         print("Repository verification FAILED:\n")
@@ -88,12 +288,15 @@ def main() -> int:
         return 1
 
     print("Repository verification PASSED.")
-    print(f"- {len(EXPECTED)} cleaned notebooks")
-    print("- no hard-coded Google Drive paths")
-    print("- no Colab/chat-specific code")
-    print("- all code cells compile statically")
-    print("- frozen outer/inner splits present")
-    print("- raw HSI archives absent")
+    print(f"- {len(EXPECTED_NOTEBOOKS)} cleaned canonical notebooks")
+    print(f"- {len(EXPECTED_SCRIPTS)} repository utility scripts compile")
+    print("- no stored notebook outputs or execution counts")
+    print("- no hard-coded Google Drive / Colab / chat-specific notebook code")
+    print("- frozen outer/inner split hashes match the manuscript audit")
+    print("- 5x8 outer fruit-disjoint and 4x8 inner-fold structure verified")
+    print("- no outer-test fruit appears in its corresponding inner CV")
+    print("- required reference JSON, tables, and PNG figures are present and valid")
+    print("- no tracked raw HSI archives, checkpoints, secret files, or credential patterns")
     return 0
 
 
