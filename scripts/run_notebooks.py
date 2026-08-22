@@ -1,6 +1,5 @@
-\
 #!/usr/bin/env python3
-"""Execute the cleaned notebooks sequentially with nbconvert."""
+"""Execute the cleaned notebooks sequentially without modifying canonical sources."""
 
 from __future__ import annotations
 
@@ -46,7 +45,19 @@ def main() -> int:
         default=-1,
         help="Per-cell timeout for nbconvert; -1 disables the timeout.",
     )
+    parser.add_argument(
+        "--output-dir",
+        type=Path,
+        default=ROOT / "exports" / "executed_notebooks",
+        help="Directory for executed notebook copies.",
+    )
     args = parser.parse_args()
+
+    if args.start < 0 or args.stop >= len(NOTEBOOKS) or args.start > args.stop:
+        parser.error(f"Valid range is 0..{len(NOTEBOOKS) - 1} with start <= stop.")
+
+    output_dir = args.output_dir.expanduser().resolve()
+    output_dir.mkdir(parents=True, exist_ok=True)
 
     env = os.environ.copy()
     env["PERSIMMON_HSI_ROOT"] = str(ROOT)
@@ -56,8 +67,11 @@ def main() -> int:
             continue
 
         path = ROOT / "notebooks" / name
+        output_name = f"{path.stem}.executed.ipynb"
+
         print("=" * 80)
         print(f"Executing {idx:02d}: {path}")
+        print(f"Writing executed copy to: {output_dir / output_name}")
         print("=" * 80)
 
         command = [
@@ -68,12 +82,16 @@ def main() -> int:
             "--to",
             "notebook",
             "--execute",
-            "--inplace",
             f"--ExecutePreprocessor.timeout={args.timeout}",
+            "--output",
+            output_name,
+            "--output-dir",
+            str(output_dir),
             str(path),
         ]
         subprocess.run(command, check=True, cwd=ROOT, env=env)
 
+    print("Execution completed. Canonical notebooks under notebooks/ were not modified.")
     return 0
 
 
