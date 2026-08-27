@@ -1,0 +1,25 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite the associated manuscript and the archived repository release once available."
+title: "Robust Longitudinal Hyperspectral Tracking of Postharvest Storage Time in Persimmon: Fruit-Specific Baseline Referencing, Machine-Learning Benchmarking, and Within-Campaign Cross-Sensor Transfer"
+type: software
+authors:
+  - family-names: "Coronel-Reyes"
+    given-names: "Julián"
+  - family-names: "Haro-Sarango"
+    given-names: "Alexander"
+  - family-names: "Quiguango Farias"
+    given-names: "Diego"
+  - family-names: "Vergara-Lozano"
+    given-names: "Vanessa"
+  - family-names: "Delgado-Vera"
+    given-names: "Carlota"
+  - family-names: "Carvajal Romero"
+    given-names: "Héctor Ramiro"
+repository-code: "https://github.com/Julians30/persimmon-hsi-longitudinal-tracking"
+keywords:
+  - persimmon
+  - hyperspectral imaging
+  - postharvest storage
+  - longitudinal modeling
+  - fruit-disjoint validation
+  - cross-sensor transfer
