@@ -17,11 +17,42 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+
+      - name: Verify scientific freeze
+        run: |
+          git diff --exit-code f97a5536208115e26de9576339d16e72c130d24f -- \
+            notebooks \
+            data/splits \
+            results/reference \
+            tables/reference \
+            figures/reference \
+            scripts/download_data.py \
+            scripts/run_notebooks.py \
+            requirements.txt \
+            environment.yml \
+            docs/DATASET.md \
+            docs/REPRODUCIBILITY.md \
+            docs/NOTEBOOK_MAP.md
+
+      - name: Verify pre-publication metadata
+        run: |
+          test -f CITATION.cff
+          test ! -f CITATION.cff.template
+          test -f docs/PREPUBLICATION_AUDIT.md
+          ! grep -Eq 'REPLACE_WITH_FINAL_AUTHOR|YYYY-MM-DD' CITATION.cff
+          grep -Fq 'Coronel-Reyes' CITATION.cff
+          grep -Fq 'Haro-Sarango' CITATION.cff
+          grep -Fq 'Quiguango Farias' CITATION.cff
+          grep -Fq 'Vergara-Lozano' CITATION.cff
+          grep -Fq 'Delgado-Vera' CITATION.cff
+          grep -Fq 'Carvajal Romero' CITATION.cff
 
       - name: Run static reproducibility audit
         run: python scripts/verify_repository.py
