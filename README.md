@@ -1,8 +1,18 @@
-# Robust Longitudinal Hyperspectral Tracking of Postharvest Storage Time in Persimmon
+# Robust Longitudinal Hyperspectral Tracking of Postharvest Storage Time in Persimmon: Fruit-Specific Baseline Referencing, Machine-Learning Benchmarking, and Within-Campaign Cross-Sensor Transfer
 
 Reproducible analysis code for a longitudinal reanalysis of the public **DeepHS Fruit v2** persimmon (Kaki) hyperspectral dataset.
 
 The project evaluates postharvest storage-time estimation under biologically grouped validation and includes fruit-specific baseline referencing, session-excluded stress tests, negative controls, spectral simplification, cross-sensor transfer, and a final classical machine-learning benchmark.
+
+## Repository status
+
+This repository is currently **private and in pre-publication freeze** while the manuscript is being prepared. The scientific analysis corresponding to the manuscript is frozen at commit:
+
+`f97a5536208115e26de9576339d16e72c130d24f`
+
+Later commits may improve metadata, citation information, documentation, and automated audit checks, but must not silently modify the frozen scientific notebooks, partitions, reference results, tables, figures, or core reproduction environment. See `docs/PREPUBLICATION_AUDIT.md`.
+
+A public release, software-license activation, release date/version, and archival DOI are intentionally deferred until the manuscript is ready for submission and the co-authors/institution have confirmed the release conditions.
 
 ## Scientific design
 
@@ -32,7 +42,8 @@ persimmon-hsi-longitudinal-tracking/
 ├── tables/reference/   # selected manuscript benchmark tables
 ├── figures/reference/  # final benchmark figures
 ├── scripts/            # downloader, sequential runner, repository verifier
-├── docs/               # dataset and reproducibility documentation
+├── docs/               # dataset, reproducibility, and pre-publication audit documentation
+├── CITATION.cff        # current manuscript author/citation metadata
 ├── requirements.txt
 ├── environment.yml
 └── .gitignore
@@ -86,6 +97,7 @@ See:
 - `docs/NOTEBOOK_MAP.md`
 - `docs/REPRODUCIBILITY.md`
 - `docs/DATASET.md`
+- `docs/PREPUBLICATION_AUDIT.md`
 
 ## Final classical benchmark
 
@@ -103,7 +115,7 @@ The repository contains a small frozen set of final benchmark outputs under `res
 
 ## Automated reproducibility audit
 
-`python scripts/verify_repository.py` performs a static pre-publication audit. GitHub Actions runs the same verifier automatically on pushes and pull requests to `main`.
+`python scripts/verify_repository.py` performs a static pre-publication audit. GitHub Actions runs the verifier automatically on pushes and pull requests to `main` and additionally checks that the frozen scientific paths have not changed since the manuscript benchmark commit.
 
 The audit checks:
 
@@ -113,7 +125,8 @@ The audit checks:
 - absence of active Google Drive / Colab / chat-specific notebook code;
 - exact frozen split hashes and nested fruit-disjoint integrity;
 - required frozen reference JSON outputs, tables, and PNG figures;
-- absence of tracked raw HSI archives, model checkpoints, secret files, and common credential patterns.
+- absence of tracked raw HSI archives, model checkpoints, secret files, and common credential patterns;
+- pre-publication citation metadata and scientific-freeze integrity in GitHub Actions.
 
 This is a **static** audit. Full end-to-end reproduction still requires downloading the public raw HSI archive and executing the analysis from raw data.
 
@@ -136,6 +149,6 @@ The study evaluates unseen fruits within one acquisition campaign. The repositor
 
 ## License and citation
 
-Before public release, confirm the software license with all co-authors and the relevant institution. See `docs/LICENSE_GUIDANCE.md`.
+`CITATION.cff` contains the current six-author manuscript citation metadata. The software version, release date, and archival DOI will be added when the manuscript repository release is created.
 
-A `CITATION.cff.template` is provided and should be finalized after the manuscript author list and repository release metadata are fixed.
+No software license has yet been activated. Before public release, the license must be confirmed with all co-authors and the relevant institution. See `docs/LICENSE_GUIDANCE.md`.
