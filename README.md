@@ -2,7 +2,7 @@
 
 [![Repository audit](https://github.com/Julians30/persimmon-hsi-longitudinal-tracking/actions/workflows/repository-audit.yml/badge.svg)](https://github.com/Julians30/persimmon-hsi-longitudinal-tracking/actions/workflows/repository-audit.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-black.svg)](LICENSE)
-[![Release](https://img.shields.io/badge/release-v1.0.0-black.svg)](https://github.com/Julians30/persimmon-hsi-longitudinal-tracking/releases/tag/v1.0)
+[![Release](https://img.shields.io/badge/release-v1.1.0-black.svg)](https://github.com/Julians30/persimmon-hsi-longitudinal-tracking/releases/tag/v1.1)
 ![Python 3.12](https://img.shields.io/badge/Python-3.12-black.svg)
 
 Code and reproducibility materials for the article submitted to *Chemometrics and Intelligent Laboratory Systems*:
@@ -13,7 +13,7 @@ Code and reproducibility materials for the article submitted to *Chemometrics an
 The study reanalyses the public **DeepHS Fruit v2** persimmon (kaki) series with a validation framework for
 longitudinal spectral regression: fruit-disjoint nested cross-validation, target-day/session-exclusion stress tests
 against matched null models, negative and baseline-mismatch controls, and multiplicity-adjusted paired
-fruit-bootstrap inference. The results reported in the article correspond to release **v1.0**.
+fruit-bootstrap inference. The code corresponding to the article is tagged as release **v1.1**.
 
 ## Data
 
@@ -85,6 +85,19 @@ python check_ridge_reproduction.py   # independent re-fit of the notebook 10 Rid
 The notebooks can also be run interactively with `jupyter lab`, from `00_data_audit.ipynb` to
 `10_final_ml_benchmark.ipynb`. All analyses use the random seed 20260818. The final benchmark run recorded
 Python 3.12.13, NumPy 2.0.2 and pandas 2.2.3; see `docs/REPRODUCIBILITY.md` and `docs/NOTEBOOK_MAP.md`.
+
+## Verification status
+
+- **Verified from the committed files:** the primary contrasts (C1–C4) and the Table 5 comparison are recomputed
+  exactly from the frozen out-of-fold predictions (also in CI); Figures 1, 2, 4–6, 8 and 9 are regenerated
+  from the committed files (Figures 3 and 7 also need the fruit-day spectra written by notebook 01).
+- **Verified from the fruit-day spectra:** an independent re-fit of the notebook 10 Ridge model
+  (`manuscript/scripts/check_ridge_reproduction.py`) reproduces all 199 archived predictions (maximum difference
+  below 1e-10 days).
+- **Raw-data step:** the extraction of the fruit-day spectra from the 793 raw cubes (notebooks 00–01) was not
+  re-executed after the notebooks were cleaned for publication. The wavelength handling of notebook 01 was
+  corrected in v1.1 and tested on synthetic ENVI cubes; the official wavelength arrays it uses reproduce the
+  wavelength grid of the archived spectra exactly.
 
 ## Models and metrics
 

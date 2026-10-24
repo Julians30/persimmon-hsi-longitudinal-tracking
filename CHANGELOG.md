@@ -1,5 +1,16 @@
 # Changelog
 
+## v1.1.0 (2026-10-24)
+
+- `notebooks/01_longitudinal_eda.ipynb`: the Kaki ENVI headers do not carry a wavelength vector, and the
+  cleaned v1.0 reader stopped with an error in that case. The reader now uses the official DeepHS camera
+  wavelength arrays (224 VIS and 249 VIS_COR bands, `core/spectral_io.py` of the DeepHS code base, commit
+  5f47812), as described in Section 2.2 of the article, and checks agreement whenever a header does supply
+  wavelengths. These arrays reproduce exactly the wavelength columns of the archived fruit-day spectra.
+  No other notebook, split, or reference output changed.
+- CI freeze check updated accordingly (notebook 01 excluded; all other frozen paths still compared with the
+  benchmark commit).
+
 ## v1.0.0 (2026-10-24)
 
 Release accompanying the article submitted to *Chemometrics and Intelligent Laboratory Systems*.

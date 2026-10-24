@@ -28,7 +28,7 @@ jobs:
       - name: Verify frozen analysis artifacts (unchanged since the benchmark run)
         run: |
           git diff --exit-code f97a5536208115e26de9576339d16e72c130d24f -- \
-            notebooks \
+            notebooks ':(exclude)notebooks/01_longitudinal_eda.ipynb' \
             data/splits \
             results/reference \
             tables/reference \
@@ -46,7 +46,7 @@ jobs:
           test -f LICENSE
           grep -Fq 'MIT License' LICENSE
           test -f CITATION.cff
-          grep -Fq 'version: "1.0.0"' CITATION.cff
+          grep -Fq 'version: "1.1.0"' CITATION.cff
           grep -Fq 'Coronel-Reyes' CITATION.cff
           grep -Fq 'Carvajal Romero' CITATION.cff
           grep -Fq 'Haro-Sarango' CITATION.cff
