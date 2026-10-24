@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Static pre-publication checks for the Persimmon HSI reproducibility repository."""
+"""Static release checks for the Persimmon HSI reproducibility repository (v1.0)."""
 
 from __future__ import annotations
 
@@ -35,6 +35,40 @@ EXPECTED_SCRIPTS = [
     "run_notebooks.py",
     "verify_repository.py",
 ]
+
+MANUSCRIPT_SCRIPT_DIR = ROOT / "manuscript" / "scripts"
+EXPECTED_MANUSCRIPT_SCRIPTS = [
+    "_common.py",
+    "check_ridge_reproduction.py",
+    "make_figures.py",
+    "make_workflow_figure.py",
+    "primary_contrasts.py",
+    "simplification_vs_final.py",
+]
+OOF_ROOT = ROOT / "results" / "manuscript_oof"
+EXPECTED_OOF = {
+    "05_kaki_wavelength_selection_sensor_simplification": [
+        "kaki_viscor_sparse_standard_oof.csv", "kaki_viscor_sparse_session_excluded_oof.csv"],
+    "06_kaki_multivariate_virtual_sensor_design": [
+        "kaki_virtual_sensor_standard_oof.csv", "kaki_virtual_sensor_session_excluded_oof.csv"],
+    "08_kaki_within_fruit_delta_trajectory": [
+        "kaki_delta_standard_oof.csv", "kaki_delta_session_excluded_oof.csv",
+        "kaki_delta_standard_dummy_median_oof.csv", "kaki_delta_session_excluded_dummy_mean_oof.csv",
+        "kaki_cross_sensor_delta_oof.csv"],
+    "09_kaki_baseline_specificity_trajectory_complexity": [
+        "kaki_baseline_complexity_standard_oof.csv", "kaki_baseline_complexity_session_excluded_oof.csv",
+        "kaki_random_other_baseline_oof.csv", "kaki_standard_dummy_median_days_gt0_oof.csv",
+        "kaki_session_excluded_dummy_mean_days_gt0_oof.csv"],
+    "10_kaki_final_classical_ml_benchmark": [
+        "kaki_final_benchmark_standard_oof.csv", "kaki_final_benchmark_session_excluded_oof.csv",
+        "kaki_final_benchmark_standard_null_oof.csv", "kaki_final_benchmark_session_null_oof.csv"],
+}
+MANUSCRIPT_TABLES = [
+    ROOT / "manuscript" / "tables" / "primary_contrasts_holm_bonferroni.csv",
+    ROOT / "manuscript" / "tables" / "simplification_vs_final_full.csv",
+]
+MANUSCRIPT_FIGURES = [ROOT / "manuscript" / "figures" / f"Figure_{i}.{ext}" for i in range(1, 10) for ext in ("png", "pdf")]
+RELEASE_FILES = [ROOT / "LICENSE", ROOT / "CITATION.cff", ROOT / "README.md", ROOT / "CHANGELOG.md"]
 
 OUTER_SPLIT = ROOT / "data" / "splits" / "kaki_outer5_fruit_disjoint_v1.csv"
 INNER_SPLIT = ROOT / "data" / "splits" / "kaki_inner4_within_outer5_fruit_disjoint_v1.csv"
@@ -164,6 +198,37 @@ def audit_scripts(errors: list[str]) -> None:
             errors.append(f"Invalid script header in {path.relative_to(ROOT)}")
 
 
+def audit_manuscript_materials(errors: list[str]) -> None:
+    actual = sorted(p.name for p in MANUSCRIPT_SCRIPT_DIR.glob("*.py"))
+    if actual != sorted(EXPECTED_MANUSCRIPT_SCRIPTS):
+        errors.append(f"Manuscript script inventory mismatch. Expected {EXPECTED_MANUSCRIPT_SCRIPTS}; actual {actual}")
+    for name in EXPECTED_MANUSCRIPT_SCRIPTS:
+        path = MANUSCRIPT_SCRIPT_DIR / name
+        if not path.exists():
+            continue
+        try:
+            py_compile.compile(str(path), doraise=True)
+        except Exception as exc:
+            errors.append(f"Python syntax error in {path.relative_to(ROOT)}: {exc}")
+    required_cols = {"fruit_id", "storage_days", "y_true", "y_pred"}
+    for folder, names in EXPECTED_OOF.items():
+        for name in names:
+            path = OOF_ROOT / folder / name
+            if not path.exists():
+                errors.append(f"Missing frozen OOF file: {path.relative_to(ROOT)}")
+                continue
+            with path.open("r", encoding="utf-8", newline="") as handle:
+                header = set(next(csv.reader(handle)))
+            if not required_cols <= header:
+                errors.append(f"OOF file lacks {sorted(required_cols - header)}: {path.relative_to(ROOT)}")
+    for path in MANUSCRIPT_TABLES + MANUSCRIPT_FIGURES + RELEASE_FILES:
+        if not path.exists() or path.stat().st_size == 0:
+            errors.append(f"Missing release file: {path.relative_to(ROOT)}")
+    lic = ROOT / "LICENSE"
+    if lic.exists() and not lic.read_text(encoding="utf-8").startswith("MIT License"):
+        errors.append("LICENSE must contain the MIT License text")
+
+
 def audit_splits(errors: list[str]) -> None:
     for path, expected_hash in EXPECTED_SPLIT_HASHES.items():
         if not path.exists():
@@ -287,6 +352,7 @@ def main() -> int:
 
     audit_notebooks(errors)
     audit_scripts(errors)
+    audit_manuscript_materials(errors)
     audit_splits(errors)
     audit_reference_outputs(errors)
     audit_tracked_files(errors)
@@ -301,6 +367,8 @@ def main() -> int:
     print(f"- {len(EXPECTED_NOTEBOOKS)} cleaned canonical notebooks")
     print(f"- {len(EXPECTED_SCRIPTS)} repository utility scripts compile")
     print("- no stored notebook outputs or execution counts")
+    print(f"- {len(EXPECTED_MANUSCRIPT_SCRIPTS)} manuscript scripts compile; frozen OOF files, tables and Figures 1-9 present")
+    print("- MIT LICENSE, CITATION.cff, README.md and CHANGELOG.md present")
     print("- no hard-coded Google Drive / Colab / chat-specific notebook code")
     print("- frozen outer/inner split hashes match the manuscript audit")
     print("- 5x8 outer fruit-disjoint and 4x8 inner-fold structure verified")

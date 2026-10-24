@@ -1,154 +1,116 @@
-# Robust Longitudinal Hyperspectral Tracking of Postharvest Storage Time in Persimmon: Fruit-Specific Baseline Referencing, Machine-Learning Benchmarking, and Within-Campaign Cross-Sensor Transfer
+# Fruit-Disjoint and Matched-Null Validation of Baseline-Referenced Hyperspectral Models for Tracking Persimmon Storage Time
 
-Reproducible analysis code for a longitudinal reanalysis of the public **DeepHS Fruit v2** persimmon (Kaki) hyperspectral dataset.
+[![Repository audit](https://github.com/Julians30/persimmon-hsi-longitudinal-tracking/actions/workflows/repository-audit.yml/badge.svg)](https://github.com/Julians30/persimmon-hsi-longitudinal-tracking/actions/workflows/repository-audit.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-black.svg)](LICENSE)
+[![Release](https://img.shields.io/badge/release-v1.0.0-black.svg)](https://github.com/Julians30/persimmon-hsi-longitudinal-tracking/releases/tag/v1.0)
+![Python 3.12](https://img.shields.io/badge/Python-3.12-black.svg)
 
-The project evaluates postharvest storage-time estimation under biologically grouped validation and includes fruit-specific baseline referencing, session-excluded stress tests, negative controls, spectral simplification, cross-sensor transfer, and a final classical machine-learning benchmark.
+Code and reproducibility materials for the article submitted to *Chemometrics and Intelligent Laboratory Systems*:
 
-## Repository status
+> Coronel-Reyes, J.; Carvajal Romero, H. R.; Haro-Sarango, A. Fruit-Disjoint and Matched-Null Validation of
+> Baseline-Referenced Hyperspectral Models for Tracking Persimmon Storage Time. (under review)
 
-This repository is currently **private and in pre-publication freeze** while the manuscript is being prepared. The scientific analysis corresponding to the manuscript is frozen at commit:
+The study reanalyses the public **DeepHS Fruit v2** persimmon (kaki) series with a validation framework for
+longitudinal spectral regression: fruit-disjoint nested cross-validation, target-day/session-exclusion stress tests
+against matched null models, negative and baseline-mismatch controls, and multiplicity-adjusted paired
+fruit-bootstrap inference. The results reported in the article correspond to release **v1.0**.
 
-`f97a5536208115e26de9576339d16e72c130d24f`
+## Data
 
-Later commits may improve metadata, citation information, documentation, and automated audit checks, but must not silently modify the frozen scientific notebooks, partitions, reference results, tables, figures, or core reproduction environment. See `docs/PREPUBLICATION_AUDIT.md`.
+| Item | Value |
+|---|---|
+| Physical fruits | 40 |
+| Fruit-day observations | 199 |
+| HSI cubes | 793 |
+| Cameras | VIS (Specim FX10, 224 bands) and VIS_COR (Corning microHSI 410, 249 bands) |
+| Storage days | 0, 1, 2, 3, 4, 6, 7, 8 |
 
-A public release, software-license activation, release date/version, and archival DOI are intentionally deferred until the manuscript is ready for submission and the co-authors/institution have confirmed the release conditions.
-
-## Scientific design
-
-The reconstructed longitudinal panel contains:
-
-- **40 physical fruits**
-- **199 fruit × day observations**
-- **793 HSI cubes**
-- two Vis–NIR imaging sensors: **VIS (Specim FX10)** and **VIS_COR (Corning microHSI 410)**
-- storage-day targets: **0, 1, 2, 3, 4, 6, 7, 8**
-
-The core evaluation principle is that all observations from the same physical fruit remain together. The official DeepHS record-level splits are not used for temporal model assessment because fruit identities overlap across those splits.
-
-The frozen manuscript partitions are committed under `data/splits/`. The outer design contains **5 folds × 8 held-out physical fruits**, and each outer-development set is subdivided into **4 inner folds × 8 fruits**. The repository verifier checks that no outer-test fruit appears in its corresponding inner cross-validation set and verifies the exact SHA-256 fingerprints of both split files.
+All observations of one physical fruit always stay in the same fold. The outer design has 5 folds of 8 test fruits;
+each outer-development set is split into 4 inner folds of 8 fruits for preprocessing and hyperparameter selection.
+The raw data are not redistributed here; they are downloaded from the official source and checked by SHA-256.
 
 ## Repository structure
 
 ```text
 persimmon-hsi-longitudinal-tracking/
-├── .github/workflows/  # automated static repository audit
-├── notebooks/          # 00–10 cleaned canonical analysis notebooks
+├── notebooks/              # 00–10 analysis notebooks (run in order)
 ├── data/
-│   ├── raw/            # public raw archives; ignored by Git
-│   ├── interim/        # generated spectral caches; ignored by Git
-│   └── splits/         # frozen manuscript fruit-disjoint splits
-├── results/reference/  # small frozen final benchmark outputs
-├── tables/reference/   # selected manuscript benchmark tables
-├── figures/reference/  # final benchmark figures
-├── scripts/            # downloader, sequential runner, repository verifier
-├── docs/               # dataset, reproducibility, and pre-publication audit documentation
-├── CITATION.cff        # current manuscript author/citation metadata
+│   ├── raw/                # public raw archives (downloaded, not tracked)
+│   ├── interim/            # fruit-day spectra written by notebook 01 (not tracked)
+│   └── splits/             # frozen fruit-disjoint outer and inner splits
+├── results/
+│   ├── reference/          # final benchmark summary and run manifest
+│   └── manuscript_oof/     # frozen out-of-fold predictions of notebooks 05, 06, 08–10
+├── tables/reference/       # benchmark tables of notebook 10
+├── figures/reference/      # benchmark figures of notebook 10
+├── manuscript/
+│   ├── scripts/            # primary contrasts, Table 5 comparison, Figures 1–9, Ridge re-fit check
+│   ├── tables/             # outputs of the manuscript scripts
+│   └── figures/            # Figures 1–9 of the article (PNG 600 dpi and PDF)
+├── scripts/                # data download, notebook runner, repository verifier
+├── docs/                   # dataset, notebook map and reproducibility protocol
+├── LICENSE                 # MIT
+├── CITATION.cff
+├── CHANGELOG.md
 ├── requirements.txt
-├── environment.yml
-└── .gitignore
+└── environment.yml
 ```
 
-## Quick start
-
-### 1. Install
-
-The final benchmark manifest records **Python 3.12.13**, **NumPy 2.0.2**, and **pandas 2.2.3**. `environment.yml` is aligned with Python 3.12 and the captured NumPy/pandas versions; compatible ranges are retained for packages whose exact historical versions were not recorded.
+## Quick verification (no raw data needed)
 
 ```bash
 git clone https://github.com/Julians30/persimmon-hsi-longitudinal-tracking.git
 cd persimmon-hsi-longitudinal-tracking
-python -m venv .venv
-```
-
-Activate the environment and install:
-
-```bash
 pip install -r requirements.txt
+python scripts/verify_repository.py
+cd manuscript/scripts
+python primary_contrasts.py          # C1–C4 with Holm and Bonferroni adjustment
+python simplification_vs_final.py    # sparse and virtual panels versus the full spectrum (Table 5)
+python make_workflow_figure.py       # Figure 1
+python make_figures.py               # Figures 2, 4, 5, 6, 8, 9 (3 and 7 need the fruit-day spectra)
 ```
 
-### 2. Download the public data
+See `manuscript/README.md` for the correspondence between scripts, tables and figures of the article.
+
+## Full reproduction from the raw data
 
 ```bash
-python scripts/download_data.py
+python scripts/download_data.py      # Kaki.zip and annotations, verified by SHA-256
+python scripts/run_notebooks.py      # executes notebooks 00–10 in order into exports/executed_notebooks/
+cd manuscript/scripts
+python make_figures.py --results-root ../../results
+python check_ridge_reproduction.py   # independent re-fit of the notebook 10 Ridge model
 ```
 
-The script downloads `Kaki.zip` and `annotations-upd-2024-01-09.zip` from the official University of Tübingen server and verifies the SHA-256 checksums used in the manuscript analysis.
+The notebooks can also be run interactively with `jupyter lab`, from `00_data_audit.ipynb` to
+`10_final_ml_benchmark.ipynb`. All analyses use the random seed 20260818. The final benchmark run recorded
+Python 3.12.13, NumPy 2.0.2 and pandas 2.2.3; see `docs/REPRODUCIBILITY.md` and `docs/NOTEBOOK_MAP.md`.
 
-### 3. Run the workflow
+## Models and metrics
 
-Interactive execution:
+Ridge regression, partial least squares regression (PLSR), RBF support vector regression, Random Forest and Extra
+Trees, applied to absolute spectra (single-scan screening) and to SNV spectra referenced to the same fruit at day 0
+(Δ-SNV, longitudinal tracking). The primary metric is the fruit-balanced mean absolute error (FB-MAE); MAE, RMSE, R²,
+Spearman ρ, ±1-day accuracy, day-balanced MAE and bias are also reported.
 
-```bash
-jupyter lab
-```
+## Automated checks
 
-Execute the notebooks in numerical order from `00_data_audit.ipynb` to `10_final_ml_benchmark.ipynb`.
-
-Sequential execution is also available:
-
-```bash
-python scripts/run_notebooks.py
-```
-
-The runner does **not** overwrite the cleaned canonical notebooks. Executed copies are written by default to `exports/executed_notebooks/`, which is ignored by Git.
-
-See:
-- `docs/NOTEBOOK_MAP.md`
-- `docs/REPRODUCIBILITY.md`
-- `docs/DATASET.md`
-- `docs/PREPUBLICATION_AUDIT.md`
-
-## Final classical benchmark
-
-The final benchmark evaluates five regression algorithms:
-
-- Ridge Regression
-- PLS Regression
-- RBF-SVR
-- Random Forest
-- Extra Trees
-
-Reported metrics include MAE, RMSE, R², Spearman correlation, ±1-day accuracy, fruit-balanced MAE, day-balanced MAE, and bias.
-
-The repository contains a small frozen set of final benchmark outputs under `results/reference/`, `tables/reference/`, and `figures/reference/` so reviewers can verify the reported manuscript values without storing the raw 2.2 GB HSI archive in Git.
-
-## Automated reproducibility audit
-
-`python scripts/verify_repository.py` performs a static pre-publication audit. GitHub Actions runs the verifier automatically on pushes and pull requests to `main` and additionally checks that the frozen scientific paths have not changed since the manuscript benchmark commit.
-
-The audit checks:
-
-- the exact 11-notebook inventory;
-- notebook JSON validity, stripped outputs, cleared execution counts, and code-cell syntax;
-- syntax and headers of the repository utility scripts;
-- absence of active Google Drive / Colab / chat-specific notebook code;
-- exact frozen split hashes and nested fruit-disjoint integrity;
-- required frozen reference JSON outputs, tables, and PNG figures;
-- absence of tracked raw HSI archives, model checkpoints, secret files, and common credential patterns;
-- pre-publication citation metadata and scientific-freeze integrity in GitHub Actions.
-
-This is a **static** audit. Full end-to-end reproduction still requires downloading the public raw HSI archive and executing the analysis from raw data.
-
-## Data availability
-
-The raw dataset is not redistributed. It is available from the official DeepHS Fruit project:
-
-- Project code: https://github.com/cogsys-tuebingen/deephs_fruit
-- Dataset directory: https://cogsys.cs.uni-tuebingen.de/webprojects/DeepHS-Fruit-2023-Datasets/
-
-See `docs/DATASET.md` for exact files and checksums.
-
-## Reproducibility note
-
-The repository notebooks are cleaned versions of the analysis notebooks: Google Drive mounting, ChatGPT review-package downloads, and conversation-specific instructions were removed. The scientific analysis logic, frozen partitions, random seed, nested selection procedures, controls, bootstrap design, and reported metrics were preserved.
+GitHub Actions runs on every push: it confirms that the notebooks, splits and reference outputs are unchanged since
+the benchmark run, verifies split hashes and fruit-disjoint integrity, checks that notebooks carry no stored outputs,
+credentials or environment-specific code, and recomputes the primary contrasts from the frozen predictions.
 
 ## Scope
 
-The study evaluates unseen fruits within one acquisition campaign. The repository deliberately preserves session-aware stress tests and other controls, but no result here should be interpreted as independent harvest/batch/campaign validation.
+All results come from one acquisition campaign in which storage day coincides with acquisition session. They
+describe generalization to unseen fruits of that campaign, not to independent harvest lots or campaigns.
+
+## Data source
+
+DeepHS Fruit project, Cognitive Systems Group, University of Tübingen:
+code at https://github.com/cogsys-tuebingen/deephs_fruit and data at
+https://cogsys.cs.uni-tuebingen.de/webprojects/DeepHS-Fruit-2023-Datasets/. See `docs/DATASET.md`.
 
 ## License and citation
 
-`CITATION.cff` contains the current six-author manuscript citation metadata. The software version, release date, and archival DOI will be added when the manuscript repository release is created.
-
-No software license has yet been activated. Before public release, the license must be confirmed with all co-authors and the relevant institution. See `docs/LICENSE_GUIDANCE.md`.
+The code is released under the [MIT License](LICENSE). The DeepHS Fruit data remain subject to the terms of their
+original providers. Please cite the article and this repository (`CITATION.cff`).

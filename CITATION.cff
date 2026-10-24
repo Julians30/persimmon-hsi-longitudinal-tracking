@@ -1,25 +1,27 @@
 cff-version: 1.2.0
-message: "If you use this software, please cite the associated manuscript and the archived repository release once available."
-title: "Robust Longitudinal Hyperspectral Tracking of Postharvest Storage Time in Persimmon: Fruit-Specific Baseline Referencing, Machine-Learning Benchmarking, and Within-Campaign Cross-Sensor Transfer"
+message: "If you use this software, please cite it as below and cite the associated article once published."
+title: "Fruit-Disjoint and Matched-Null Validation of Baseline-Referenced Hyperspectral Models for Tracking Persimmon Storage Time: code and reproducibility materials"
 type: software
+version: "1.0.0"
+date-released: "2026-10-24"
+license: MIT
 authors:
   - family-names: "Coronel-Reyes"
     given-names: "Julián"
-  - family-names: "Haro-Sarango"
-    given-names: "Alexander"
-  - family-names: "Quiguango Farias"
-    given-names: "Diego"
-  - family-names: "Vergara-Lozano"
-    given-names: "Vanessa"
-  - family-names: "Delgado-Vera"
-    given-names: "Carlota"
+    email: "jcoronel1@utmachala.edu.ec"
+    affiliation: "Universidad Técnica de Machala"
   - family-names: "Carvajal Romero"
     given-names: "Héctor Ramiro"
+    affiliation: "Universidad Técnica de Machala"
+  - family-names: "Haro-Sarango"
+    given-names: "Alexander"
+    affiliation: "Universidad Peruana Unión"
 repository-code: "https://github.com/Julians30/persimmon-hsi-longitudinal-tracking"
 keywords:
-  - persimmon
   - hyperspectral imaging
-  - postharvest storage
-  - longitudinal modeling
-  - fruit-disjoint validation
-  - cross-sensor transfer
+  - chemometrics
+  - nested cross-validation
+  - matched null model
+  - baseline referencing
+  - calibration transfer
+  - persimmon

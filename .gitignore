@@ -29,6 +29,8 @@ results/*
 !results/README.md
 !results/reference/
 !results/reference/**
+!results/manuscript_oof/
+!results/manuscript_oof/**
 figures/*
 !figures/README.md
 !figures/reference/

@@ -25,7 +25,7 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Verify scientific freeze
+      - name: Verify frozen analysis artifacts (unchanged since the benchmark run)
         run: |
           git diff --exit-code f97a5536208115e26de9576339d16e72c130d24f -- \
             notebooks \
@@ -41,18 +41,30 @@ jobs:
             docs/REPRODUCIBILITY.md \
             docs/NOTEBOOK_MAP.md
 
-      - name: Verify pre-publication metadata
+      - name: Verify release metadata
         run: |
+          test -f LICENSE
+          grep -Fq 'MIT License' LICENSE
           test -f CITATION.cff
-          test ! -f CITATION.cff.template
-          test -f docs/PREPUBLICATION_AUDIT.md
-          ! grep -Eq 'REPLACE_WITH_FINAL_AUTHOR|YYYY-MM-DD' CITATION.cff
+          grep -Fq 'version: "1.0.0"' CITATION.cff
           grep -Fq 'Coronel-Reyes' CITATION.cff
-          grep -Fq 'Haro-Sarango' CITATION.cff
-          grep -Fq 'Quiguango Farias' CITATION.cff
-          grep -Fq 'Vergara-Lozano' CITATION.cff
-          grep -Fq 'Delgado-Vera' CITATION.cff
           grep -Fq 'Carvajal Romero' CITATION.cff
+          grep -Fq 'Haro-Sarango' CITATION.cff
+
+      - name: Install analysis dependencies
+        run: pip install "numpy>=2.0,<2.3" "pandas>=2.2,<2.4" "matplotlib>=3.8"
+
+      - name: Recompute primary contrasts from the frozen OOF predictions
+        run: |
+          cp manuscript/tables/primary_contrasts_holm_bonferroni.csv /tmp/expected.csv
+          cd manuscript/scripts && python primary_contrasts.py
+          cd ../.. && python - <<'PY'
+          import pandas as pd
+          a = pd.read_csv("/tmp/expected.csv"); b = pd.read_csv("manuscript/tables/primary_contrasts_holm_bonferroni.csv")
+          num = a.select_dtypes("number").columns
+          assert ((a[num] - b[num]).abs() < 1e-9).all().all(), "primary contrasts differ from the committed table"
+          print("primary contrasts reproduced exactly")
+          PY
 
       - name: Run static reproducibility audit
         run: python scripts/verify_repository.py
