@@ -1,14 +1,18 @@
 # Fruit-Disjoint and Matched-Null Validation of Baseline-Referenced Hyperspectral Models for Tracking Persimmon Storage Time
 
+![Enviado](https://img.shields.io/badge/Enviado-Chemometrics%20and%20Intelligent%20Laboratory%20Systems-2E6DA4?style=flat-square)
+
 [![Repository audit](https://github.com/Julians30/persimmon-hsi-longitudinal-tracking/actions/workflows/repository-audit.yml/badge.svg)](https://github.com/Julians30/persimmon-hsi-longitudinal-tracking/actions/workflows/repository-audit.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-black.svg)](LICENSE)
 [![Release](https://img.shields.io/badge/release-v1.1.0-black.svg)](https://github.com/Julians30/persimmon-hsi-longitudinal-tracking/releases/tag/v1.1)
 ![Python 3.12](https://img.shields.io/badge/Python-3.12-black.svg)
 
-Code and reproducibility materials for the article submitted to *Chemometrics and Intelligent Laboratory Systems*:
+**Manuscript status:** Submitted to *Chemometrics and Intelligent Laboratory Systems* on **24 October 2026**.
+
+Code and reproducibility materials for the submitted article:
 
 > Coronel-Reyes, J.; Carvajal Romero, H. R.; Haro-Sarango, A. Fruit-Disjoint and Matched-Null Validation of
-> Baseline-Referenced Hyperspectral Models for Tracking Persimmon Storage Time. (under review)
+> Baseline-Referenced Hyperspectral Models for Tracking Persimmon Storage Time. (submitted 24 October 2026)
 
 The study reanalyses the public **DeepHS Fruit v2** persimmon (kaki) series with a validation framework for
 longitudinal spectral regression: fruit-disjoint nested cross-validation, target-day/session-exclusion stress tests
