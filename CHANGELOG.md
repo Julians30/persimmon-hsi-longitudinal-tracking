@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.1.1 (unreleased)
+
+- Updated manuscript authorship to Delgado-Vera, Coronel-Reyes, Vergara-Lozano and Haro-Sarango, consistent with the latest manuscript.
+- Extended the manuscript documentation to cover simulated colour baselines and Supplementary Materials (Tables S1–S8; Figure S1).
+- Figure and result assets are retained in the user-provided update bundle, pending separate upload and verification.
+
 ## v1.1.0 (2026-10-24)
 
 - `notebooks/01_longitudinal_eda.ipynb`: the Kaki ENVI headers do not carry a wavelength vector, and the
@@ -13,7 +19,7 @@
 
 ## v1.0.0 (2026-10-24)
 
-Release accompanying the article submitted to *Chemometrics and Intelligent Laboratory Systems*.
+Release accompanying the submitted article.
 
 - Eleven analysis notebooks (00–10), frozen fruit-disjoint splits and reference benchmark outputs, unchanged
   since the benchmark run.
