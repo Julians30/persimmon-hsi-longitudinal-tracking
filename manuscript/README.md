@@ -11,8 +11,10 @@ Run them from this folder (`cd manuscript/scripts`). By default they read the fr
 | `make_workflow_figure.py` | `figures/Figure_1.png`, `.pdf` | Figure 1 |
 | `make_figures.py` | `figures/Figure_2` to `Figure_9` (`.png`, `.pdf`) | Figures 2–9 |
 | `check_ridge_reproduction.py` | console report | Independent re-fit of the notebook 10 Ridge model |
+| `colour_index_baseline.py` | `tables/colour_index_baseline.csv`, `colour_index_contrasts.csv`, `colour_index_oof.csv` | Section 2.9; Results 3.4; Table 6 |
+| `make_supplement_tables.py` | `tables/supplement/Table_S1.csv`–`Table_S8.csv`, `figures/Figure_S1.png`, `.pdf` | Supplementary Materials (summaries of existing outputs) |
 
-`make_figures.py` (Figures 3 and 7) and `check_ridge_reproduction.py` also need
+`make_figures.py` (Figures 3 and 7), `colour_index_baseline.py` and `check_ridge_reproduction.py` also need
 `data/interim/kaki_fruit_day_spectra_<camera>.csv`, which notebook 01 writes after the raw data have been
 downloaded with `python scripts/download_data.py`. The other outputs need only the committed files.
 
