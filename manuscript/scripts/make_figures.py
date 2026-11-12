@@ -2,7 +2,7 @@
 """Figures 2–9 of the manuscript in one journal style.
 
 Times-metric serif type (Liberation Serif), true print size (16 cm full width), 600 dpi PNG plus vector PDF,
-black and grey only. Every value is recomputed from the out-of-fold predictions; Figures 3 and 7 also need the
+Colour: colour-blind-safe categorical pair (blue = standard, orange = session-excluded) and viridis for storage days. Every value is recomputed from the out-of-fold predictions; Figures 3 and 7 also need the
 fruit-day spectra written by notebook 01 to data/interim/ (they are skipped with a message if absent, because
 the raw DeepHS data are not redistributed). Figure 6 uses the cross-sensor summary values of notebook 07.
 Output: manuscript/figures/Figure_<n>.png and .pdf
@@ -33,8 +33,11 @@ plt.rcParams.update({
 })
 FULL, HALF = 6.30, 3.50          # inches: full text width (16 cm), single column (~9 cm)
 PH = 2.45                         # panel height
-BAR = dict(color="0.80", edgecolor="black", linewidth=0.6, width=0.62)
-REF = dict(color="black", ls=(0, (4, 2)), lw=0.8)
+BLUE, ORANGE, INK, MUTED = "#2a78d6", "#eb6834", "#0b0b0b", "#52514e"
+# storage-day colours: viridis (monotone lightness, colour-blind-safe), light yellow-green = day 0 -> dark purple = day 8
+DAY_RAMP = ['#86d549', '#44bf70', '#20a486', '#23888e', '#2f6c8e', '#3d4d8a', '#482979', '#440154']
+BAR = dict(color=BLUE, edgecolor="none", width=0.62)
+REF = dict(color=MUTED, ls=(0, (4, 2)), lw=0.9)
 DAYS = [0, 1, 2, 3, 4, 6, 7, 8]
 pfm = fb_mae
 
@@ -43,12 +46,12 @@ def label(ax, s):
     ax.text(-0.13, 1.04, s, transform=ax.transAxes, fontsize=9, fontweight="bold", va="bottom", ha="left")
 
 
-def bars(ax, names, vals, ref=None, ref_label=None, ylabel="Fruit-balanced MAE (days)", rot=0):
+def bars(ax, names, vals, ref=None, ref_label=None, ylabel="Fruit-balanced MAE (days)", rot=0, color=BLUE):
     x = np.arange(len(vals))
-    ax.bar(x, vals, **BAR)
+    ax.bar(x, vals, **{**BAR, "color": color})
     for xi, v in zip(x, vals):
         if ref is not None and abs(v - ref) < 0.2:   # avoid collision with the reference line
-            ax.text(xi, v - 0.04, f"{v:.3f}", ha="center", va="top", fontsize=6.8)
+            ax.text(xi, v - 0.04, f"{v:.3f}", ha="center", va="top", fontsize=6.8, color="white")
         else:
             ax.text(xi, v + 0.03, f"{v:.3f}", ha="center", va="bottom", fontsize=6.8)
     if ref is not None:
@@ -69,8 +72,8 @@ def save(fig, n):
 
 
 def grey_days(days):
-    """Sequential grey scale: earliest day light grey, latest day black."""
-    return {d: str(round(0.72 * (1 - i / (len(days) - 1)), 2)) for i, d in enumerate(days)}
+    """Viridis storage-day colours: same colour for the same day in every figure."""
+    return {d: DAY_RAMP[DAYS.index(d)] for d in days}
 
 
 # ------------------------------------------------------------- data
@@ -93,13 +96,13 @@ std = read(RES, NB10, "kaki_final_benchmark_standard_oof.csv")
 ses = read(RES, NB10, "kaki_final_benchmark_session_excluded_oof.csv")
 nul = read(RES, NB10, "kaki_final_benchmark_standard_null_oof.csv")
 
-# ------------------------------------------------------------- Figure 2 (single column)
+# ------------------------------------------------------------- Figure 2 (full width, same print size as Figures 3-9)
 r2 = std[(std.task == "absolute") & (std.algorithm == "Ridge")]
 counts = r2.groupby("storage_days").fruit_id.nunique().reindex(DAYS)
-fig, ax = plt.subplots(figsize=(HALF, 2.3))
+fig, ax = plt.subplots(figsize=(FULL, PH))
 ax.bar(range(len(DAYS)), counts.values, **BAR)
 for i, v in enumerate(counts.values):
-    ax.text(i, v + 0.6, str(v), ha="center", va="bottom", fontsize=7)
+    ax.text(i, v + 0.6, str(v), ha="center", va="bottom", fontsize=6.8)
 ax.set_xticks(range(len(DAYS))); ax.set_xticklabels(DAYS)
 ax.set_xlabel("Storage day"); ax.set_ylabel("Fruits observed"); ax.set_ylim(0, 46)
 fig.tight_layout(pad=0.3); save(fig, 2)
@@ -110,15 +113,15 @@ if HAVE_SPECTRA:
     fig, ax = plt.subplots(1, 2, figsize=(FULL, PH))
     g = grey_days(DAYS)
     for d in DAYS:
-        ax[0].plot(wl, X[day == d].mean(0), color=g[d], lw=0.9, label=f"Day {d}")
+        ax[0].plot(wl, X[day == d].mean(0), color=g[d], lw=1.2, label=f"Day {d}")
     ax[0].set_xlabel("Wavelength (nm)"); ax[0].set_ylabel("Mean reflectance")
     ax[0].legend(ncol=2, loc="upper left", handlelength=1.6, columnspacing=1.0)
     ax[0].set_xlim(wl.min(), wl.max())
     rms = pd.DataFrame({"day": day, "d": [np.sqrt(np.mean((X[i] - base_raw[f]) ** 2)) if f in base_raw else np.nan
                                           for i, f in enumerate(fid)]}).dropna()
     med, mean = rms.groupby("day").d.median().reindex(DAYS), rms.groupby("day").d.mean().reindex(DAYS)
-    ax[1].plot(DAYS, med.values, color="black", marker="o", ms=3.5, label="Median")
-    ax[1].plot(DAYS, mean.values, color="0.45", ls=(0, (4, 2)), marker="s", ms=3.5, mfc="white", label="Mean")
+    ax[1].plot(DAYS, med.values, color=BLUE, marker="o", ms=4, lw=1.4, label="Median")
+    ax[1].plot(DAYS, mean.values, color=ORANGE, ls=(0, (4, 2)), marker="s", ms=4, lw=1.4, mfc="white", label="Mean")
     ax[1].set_xticks(DAYS); ax[1].set_xlabel("Storage day"); ax[1].set_ylabel("RMS distance from day 0")
     ax[1].legend(loc="upper left")
     label(ax[0], "(a)"); label(ax[1], "(b)")
@@ -133,13 +136,13 @@ e["ae"] = (e.y_true - e.y_pred).abs(); e["bias"] = e.y_pred - e.y_true
 fig, ax = plt.subplots(1, 2, figsize=(FULL, PH))
 rng = np.random.default_rng(0)
 jit = rng.uniform(-0.12, 0.12, len(s))
-ax[0].scatter(s.y_true + jit, s.y_pred, s=9, facecolors="none", edgecolors="black", linewidths=0.5)
-ax[0].plot([-1, 9.5], [-1, 9.5], color="0.45", ls=(0, (4, 2)), lw=0.8, label="1:1 line")
+ax[0].scatter(s.y_true + jit, s.y_pred, s=10, facecolors="none", edgecolors=BLUE, linewidths=0.7)
+ax[0].plot([-1, 9.5], [-1, 9.5], color=MUTED, ls=(0, (4, 2)), lw=0.9, label="1:1 line")
 ax[0].set_xlim(-0.6, 8.6); ax[0].set_ylim(-1.2, 9.2); ax[0].set_xticks(DAYS)
 ax[0].set_xlabel("Observed storage day"); ax[0].set_ylabel("Predicted storage day"); ax[0].legend(loc="upper left")
 by = s.groupby("storage_days").ae
-ax[1].plot(by.mean().index, by.mean().values, color="black", marker="o", ms=3.5, label="Mean absolute error")
-ax[1].plot(by.median().index, by.median().values, color="0.45", ls=(0, (4, 2)), marker="s", ms=3.5, mfc="white",
+ax[1].plot(by.mean().index, by.mean().values, color=BLUE, marker="o", ms=4, lw=1.4, label="Mean absolute error")
+ax[1].plot(by.median().index, by.median().values, color=ORANGE, ls=(0, (4, 2)), marker="s", ms=4, lw=1.4, mfc="white",
            label="Median absolute error")
 ax[1].set_xticks(DAYS); ax[1].set_xlabel("Storage day"); ax[1].set_ylabel("Absolute error (days)")
 ax[1].legend(loc="upper left")
@@ -148,12 +151,12 @@ fig.tight_layout(pad=0.4, w_pad=2.0); save(fig, 4)
 
 # ------------------------------------------------------------- Figure 5
 fig, ax = plt.subplots(1, 2, figsize=(FULL, PH))
-for gdf, lab, kw in [(s, "Standard", dict(color="black", marker="o")),
-                     (e, "Session-excluded", dict(color="0.45", ls=(0, (4, 2)), marker="s", mfc="white"))]:
+for gdf, lab, kw in [(s, "Standard", dict(color=BLUE, marker="o", lw=1.4)),
+                     (e, "Session-excluded", dict(color=ORANGE, ls=(0, (4, 2)), marker="s", mfc="white", lw=1.4))]:
     m = gdf.groupby("storage_days").ae.mean(); b = gdf.groupby("storage_days").bias.mean()
-    ax[0].plot(m.index, m.values, ms=3.5, label=lab, **kw)
-    ax[1].plot(b.index, b.values, ms=3.5, label=lab, **kw)
-ax[1].axhline(0, color="black", lw=0.5)
+    ax[0].plot(m.index, m.values, ms=4, label=lab, **kw)
+    ax[1].plot(b.index, b.values, ms=4, label=lab, **kw)
+ax[1].axhline(0, color=MUTED, lw=0.6)
 ax[0].set_ylabel("MAE (days)"); ax[1].set_ylabel("Bias, predicted − observed (days)")
 for a in ax:
     a.set_xticks(DAYS); a.set_xlabel("Storage day"); a.legend(loc="upper left" if a is ax[0] else "lower left")
@@ -165,7 +168,7 @@ dummy_abs = pfm(nul[nul.task == "absolute"]) if "task" in nul.columns else None
 fig, ax = plt.subplots(1, 2, figsize=(FULL, PH), gridspec_kw={"width_ratios": [4, 2.6]})
 bars(ax[0], ["VIS\nwithin", "VIS_COR\nwithin", "VIS→VIS_COR", "VIS_COR→VIS"], [1.062, 0.804, 1.370, 1.349],
      ref=dummy_abs, ref_label="Dummy median")
-bars(ax[1], ["VIS→VIS_COR", "VIS_COR→VIS"], [1.701, 1.499], ref=2.224, ref_label="Matched null")
+bars(ax[1], ["VIS→VIS_COR", "VIS_COR→VIS"], [1.701, 1.499], ref=2.224, ref_label="Matched null", color=ORANGE)
 label(ax[0], "(a)"); label(ax[1], "(b)")
 fig.tight_layout(pad=0.4, w_pad=2.0); save(fig, 6)
 print("Fig6 dummy", round(dummy_abs, 3))
@@ -177,8 +180,8 @@ if HAVE_SPECTRA:
     g7 = grey_days(dd)
     for d in dd:
         m = np.mean([Xs[i] - base_snv[fid[i]] for i in range(len(fid)) if day[i] == d and fid[i] in base_snv], axis=0)
-        ax[0].plot(wl, m, color=g7[d], lw=0.9, label=f"Day {d}")
-    ax[0].axhline(0, color="black", lw=0.5)
+        ax[0].plot(wl, m, color=g7[d], lw=1.2, label=f"Day {d}")
+    ax[0].axhline(0, color=MUTED, lw=0.6)
     ax[0].set_xlim(wl.min(), wl.max())
     ax[0].set_xlabel("Wavelength (nm)"); ax[0].set_ylabel("Mean Δ-SNV")
     ax[0].legend(ncol=2, loc="upper left", handlelength=1.6, columnspacing=1.0)
