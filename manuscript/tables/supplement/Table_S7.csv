@@ -1,0 +1,5 @@
+Direction,Representation,FB-MAE (days)
+VIS → VIS_COR,Δ-raw,0.855
+VIS → VIS_COR,Δ-SNV,0.879
+VIS_COR → VIS,Δ-raw,1.466
+VIS_COR → VIS,Δ-SNV,1.037

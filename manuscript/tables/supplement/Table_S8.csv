@@ -1,0 +1,9 @@
+Representation,"VIS, Standard","VIS, Session-excluded","VIS_COR, Standard","VIS_COR, Session-excluded"
+"Δ-raw, same-fruit day 0",0.953,1.426,0.666,1.061
+"Δ-SNV, same-fruit day 0",0.876,1.157,0.531,1.033
+"Δ-SNV, development-mean day 0",0.946,1.920,0.711,2.011
+"Δ-SNV, random other fruit's day 0 (mean ± SD, 10 draws)",0.960 ± 0.082,NA,0.719 ± 0.026,NA
+Scalar RMS distance from day 0,1.550,2.001,1.524,1.981
+Scalar L2 norm,1.550,2.001,1.524,1.981
+Scalar spectral angle,1.550,2.001,1.525,1.981
+RMS + spectral angle,1.551,2.002,1.525,1.981

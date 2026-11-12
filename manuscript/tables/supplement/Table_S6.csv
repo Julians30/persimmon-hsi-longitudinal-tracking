@@ -1,0 +1,13 @@
+Task,Representation,Protocol,FB-MAE,MAE,RMSE,R²,ρ,±1 day (%)
+Single-scan,Full spectrum,Standard,0.718,0.736,0.914,0.842,0.913,74.4
+Single-scan,Full spectrum,Session-excluded,1.75,1.787,2.204,0.085,0.345,32.2
+Single-scan,Two-band ND,Standard,1.674,1.717,2.137,0.139,0.435,38.2
+Single-scan,Two-band ND,Session-excluded,1.954,1.973,2.4,-0.086,0.09,30.2
+Single-scan,Broadband RGB,Standard,1.433,1.482,1.914,0.31,0.557,40.7
+Single-scan,Broadband RGB,Session-excluded,1.736,1.756,2.174,0.109,0.377,33.7
+Tracking,Full spectrum,Standard,0.531,0.597,0.822,0.848,0.929,84.3
+Tracking,Full spectrum,Session-excluded,1.033,1.117,1.387,0.567,0.779,49.1
+Tracking,Two-band ND,Standard,1.519,1.585,1.932,0.16,0.473,34.0
+Tracking,Two-band ND,Session-excluded,1.993,1.984,2.308,-0.2,-0.169,25.8
+Tracking,Broadband RGB,Standard,1.223,1.289,1.611,0.416,0.688,41.5
+Tracking,Broadband RGB,Session-excluded,1.602,1.581,1.938,0.154,0.289,37.7

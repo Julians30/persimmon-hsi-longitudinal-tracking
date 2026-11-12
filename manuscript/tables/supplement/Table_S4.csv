@@ -1,0 +1,21 @@
+Protocol,Task,Comparison,Fruits,Mean difference (days),95% CI,First model better (% fruits)
+Standard,Single-scan,PLSR − Ridge,40,+0.054,−0.034 to +0.141,45.0
+Standard,Single-scan,SVR-RBF − Ridge,40,+0.744,+0.477 to +1.031,17.5
+Standard,Single-scan,Random Forest − Ridge,40,+0.792,+0.517 to +1.083,15.0
+Standard,Single-scan,Extra Trees − Ridge,40,+0.791,+0.519 to +1.092,20.0
+Standard,Single-scan,Ridge − null model,40,−0.947,−1.155 to −0.744,92.5
+Standard,Δ-SNV,PLSR − Ridge,38,−0.044,−0.117 to +0.017,52.6
+Standard,Δ-SNV,SVR-RBF − Ridge,38,+0.094,−0.024 to +0.221,42.1
+Standard,Δ-SNV,Random Forest − Ridge,38,+0.057,−0.062 to +0.184,47.4
+Standard,Δ-SNV,Extra Trees − Ridge,38,+0.018,−0.105 to +0.152,55.3
+Standard,Δ-SNV,PLSR − null model,38,−1.119,−1.296 to −0.938,97.4
+Session-excluded,Single-scan,PLSR − Ridge,40,−0.050,−0.092 to −0.006,72.5
+Session-excluded,Single-scan,SVR-RBF − Ridge,40,+0.069,−0.032 to +0.163,30.0
+Session-excluded,Single-scan,Random Forest − Ridge,40,+0.425,+0.267 to +0.590,17.5
+Session-excluded,Single-scan,Extra Trees − Ridge,40,+0.412,+0.226 to +0.600,22.5
+Session-excluded,Single-scan,PLSR − null model,40,−0.525,−0.763 to −0.272,80.0
+Session-excluded,Δ-SNV,PLSR − Ridge,38,+0.015,−0.080 to +0.116,55.3
+Session-excluded,Δ-SNV,SVR-RBF − Ridge,38,+0.360,+0.221 to +0.516,13.2
+Session-excluded,Δ-SNV,Random Forest − Ridge,38,+0.516,+0.365 to +0.681,7.9
+Session-excluded,Δ-SNV,Extra Trees − Ridge,38,+0.443,+0.293 to +0.598,18.4
+Session-excluded,Δ-SNV,Ridge − null model,38,−1.121,−1.327 to −0.932,97.4

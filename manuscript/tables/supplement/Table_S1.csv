@@ -1,0 +1,21 @@
+Protocol,Task,Algorithm,Fold 1,Fold 2,Fold 3,Fold 4,Fold 5
+Standard,Single-scan,Ridge,"RAW, α = 0.1","RAW, α = 0.1","RAW, α = 0.1","RAW, α = 0.1","RAW, α = 0.1"
+Standard,Single-scan,PLSR,"RAW, 10 LV","RAW, 20 LV","SNV, 30 LV","RAW, 20 LV","RAW, 20 LV"
+Standard,Single-scan,SVR-RBF,"SNV, C = 10, γ = scale, ε = 0.5","RAW, C = 1, γ = scale, ε = 0.1","SNV, C = 10, γ = scale, ε = 0.1","SNV, C = 10, γ = scale, ε = 0.5","RAW, C = 100, γ = scale, ε = 0.1"
+Standard,Single-scan,Random Forest,"SNV, depth none, leaf 1, feat. 1","RAW, depth 8, leaf 3, feat. 1","RAW, depth 8, leaf 3, feat. 0.5","SNV, depth none, leaf 1, feat. 1","RAW, depth none, leaf 3, feat. 1"
+Standard,Single-scan,Extra Trees,"SNV, depth none, leaf 1, feat. 0.5","SNV, depth 8, leaf 3, feat. 1","RAW, depth 8, leaf 3, feat. 0.5","SNV, depth none, leaf 1, feat. 1","RAW, depth none, leaf 1, feat. 1"
+Standard,Δ-SNV,Ridge,α = 1,α = 1,α = 0.1,α = 1,α = 1
+Standard,Δ-SNV,PLSR,10 LV,10 LV,10 LV,10 LV,10 LV
+Standard,Δ-SNV,SVR-RBF,"C = 1, γ = scale, ε = 0.1","C = 100, γ = 0.01, ε = 0.1","C = 10, γ = scale, ε = 0.1","C = 100, γ = scale, ε = 0.1","C = 10, γ = scale, ε = 0.1"
+Standard,Δ-SNV,Random Forest,"depth 8, leaf 1, feat. 0.5","depth 8, leaf 1, feat. 1","depth 8, leaf 1, feat. 1","depth 8, leaf 1, feat. 0.5","depth 8, leaf 1, feat. 1"
+Standard,Δ-SNV,Extra Trees,"depth 8, leaf 1, feat. 1","depth none, leaf 1, feat. 1","depth none, leaf 1, feat. 1","depth none, leaf 1, feat. 0.5","depth 8, leaf 1, feat. 0.5"
+Session-excluded,Single-scan,Ridge,"RAW, α = 1000","RAW, α = 1000","RAW, α = 1000","RAW, α = 1000","RAW, α = 1000"
+Session-excluded,Single-scan,PLSR,"RAW, 2 LV","RAW, 2 LV","RAW, 2 LV","RAW, 2 LV","RAW, 2 LV"
+Session-excluded,Single-scan,SVR-RBF,"RAW, C = 1, γ = scale, ε = 0.1","RAW, C = 1, γ = scale, ε = 0.1","RAW, C = 1, γ = scale, ε = 0.1","RAW, C = 1, γ = scale, ε = 0.1","RAW, C = 1, γ = scale, ε = 0.1"
+Session-excluded,Single-scan,Random Forest,"SNV, depth none, leaf 3, feat. 0.5","RAW, depth 8, leaf 3, feat. 1","RAW, depth none, leaf 3, feat. 0.5","RAW, depth none, leaf 3, feat. 1","RAW, depth 8, leaf 3, feat. 1"
+Session-excluded,Single-scan,Extra Trees,"SNV, depth none, leaf 3, feat. 0.5","RAW, depth none, leaf 3, feat. 0.5","RAW, depth none, leaf 1, feat. 0.5","RAW, depth none, leaf 3, feat. 0.5","RAW, depth none, leaf 3, feat. 0.5"
+Session-excluded,Δ-SNV,Ridge,α = 100,α = 100,α = 100,α = 0.1,α = 0.1
+Session-excluded,Δ-SNV,PLSR,2 LV,20 LV,2 LV,20 LV,10 LV
+Session-excluded,Δ-SNV,SVR-RBF,"C = 1, γ = scale, ε = 0.5","C = 100, γ = scale, ε = 0.5","C = 1, γ = scale, ε = 0.1","C = 100, γ = scale, ε = 0.5","C = 1, γ = scale, ε = 0.1"
+Session-excluded,Δ-SNV,Random Forest,"depth 8, leaf 1, feat. 0.5","depth 8, leaf 1, feat. 1","depth 8, leaf 1, feat. 0.5","depth none, leaf 1, feat. 0.5","depth none, leaf 1, feat. 0.5"
+Session-excluded,Δ-SNV,Extra Trees,"depth 8, leaf 1, feat. 1","depth 8, leaf 1, feat. 0.5","depth none, leaf 3, feat. 0.5","depth 8, leaf 1, feat. 0.5","depth 8, leaf 1, feat. 0.5"
