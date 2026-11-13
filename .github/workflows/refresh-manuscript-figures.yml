@@ -1,0 +1,55 @@
+name: Refresh manuscript figures from frozen results
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/refresh-manuscript-figures.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh-manuscript-figures
+  cancel-in-progress: false
+
+jobs:
+  regenerate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install figure dependencies
+        run: pip install "numpy==2.0.2" "pandas==2.2.3" "matplotlib>=3.8,<4"
+
+      - name: Recreate figures from existing frozen predictions
+        run: |
+          cd manuscript/scripts
+          python make_figures.py
+          python make_supplement_tables.py
+          cd ../..
+          test -f manuscript/figures/Figure_S1.png
+          test -f manuscript/figures/Figure_S1.pdf
+          # Figures 3 and 7 need untracked fruit-day spectra and are intentionally untouched.
+
+      - name: Commit regenerated figure assets
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add manuscript/figures/Figure_{2,4,5,6,8,9,S1}.{png,pdf}
+          if ! git diff --cached --quiet; then
+            git commit -m "figures: refresh from frozen predictions [skip ci]"
+            git push origin HEAD:main
+          else
+            echo "All available figures are already up to date"
+          fi
