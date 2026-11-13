@@ -2,10 +2,12 @@
 
 ## v1.1.1 (unreleased)
 
+- 2026-11-13: Identified Foods (MDPI) as the journal in the README and manuscript documentation, and added the associated manuscript to CITATION.cff.
+
 - Updated manuscript authorship to Delgado-Vera, Coronel-Reyes, Vergara-Lozano and Haro-Sarango, consistent with the latest manuscript.
 - Extended the manuscript documentation to cover simulated colour baselines and Supplementary Materials (Tables S1–S8; Figure S1).
 - Regenerated Figures 2, 4, 5, 6, 8, 9 and Supplementary Figure S1 (PDF and PNG) from the frozen predictions, without changing the original analysis notebooks.
-- Figures 3 and 7 still require the archived fruit-day spectra for colour regeneration; the full colour-index out-of-fold CSV is supplied separately pending upload.
+- Synchronized the colour manuscript versions of Figures 3 and 7 (PDF and PNG) and the complete frozen colour-index out-of-fold predictions (`manuscript/tables/colour_index_oof.csv`). Regenerating Figures 3 and 7 still requires the archived fruit-day spectra.
 
 ## v1.1.0 (2026-10-24)
 

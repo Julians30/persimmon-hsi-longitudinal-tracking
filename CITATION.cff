@@ -29,3 +29,26 @@ keywords:
   - baseline referencing
   - calibration transfer
   - persimmon
+
+preferred-citation:
+  type: article
+  title: "Fruit-Disjoint and Matched-Null Validation of Baseline-Referenced Hyperspectral Models for Tracking Persimmon Storage Time"
+  journal: "Foods"
+  publisher:
+    name: "MDPI"
+  authors:
+    - family-names: "Delgado-Vera"
+      given-names: "Carlota"
+      email: "cdelgado@uagraria.edu.ec"
+      affiliation: "Universidad Agraria del Ecuador"
+    - family-names: "Coronel-Reyes"
+      given-names: "Julián"
+      email: "jcoronel1@utmachala.edu.ec"
+      affiliation: "Universidad Técnica de Machala"
+    - family-names: "Vergara-Lozano"
+      given-names: "Vanessa"
+      affiliation: "Universidad Agraria del Ecuador"
+    - family-names: "Haro-Sarango"
+      given-names: "Alexander"
+      affiliation: "Universidad Peruana Unión"
+  notes: "Manuscript under review. Publication year, volume, pages and DOI will be added after publication."

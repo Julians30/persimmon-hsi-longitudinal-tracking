@@ -5,12 +5,13 @@
 [![Release](https://img.shields.io/badge/release-v1.1.0-black.svg)](https://github.com/Julians30/persimmon-hsi-longitudinal-tracking/releases/tag/v1.1)
 ![Python 3.12](https://img.shields.io/badge/Python-3.12-black.svg)
 
+**Journal:** [Foods (MDPI)](https://www.mdpi.com/journal/foods)  
 **Manuscript status:** Under review.
 
 Code and reproducibility materials for the article under review:
 
 > Delgado-Vera, C.; Coronel-Reyes, J.; Vergara-Lozano, V.; Haro-Sarango, A. Fruit-Disjoint and Matched-Null Validation of
-> Baseline-Referenced Hyperspectral Models for Tracking Persimmon Storage Time. (under review)
+> Baseline-Referenced Hyperspectral Models for Tracking Persimmon Storage Time. *Foods* (MDPI), manuscript under review.
 
 The study reanalyses the public **DeepHS Fruit v2** persimmon (kaki) series with a validation framework for
 longitudinal spectral regression: fruit-disjoint nested cross-validation, target-day/session-exclusion stress tests
@@ -71,6 +72,9 @@ python simplification_vs_final.py    # sparse and virtual panels versus the full
 python make_workflow_figure.py       # Figure 1
 python make_figures.py               # Figures 2, 4, 5, 6, 8, 9 (3 and 7 need the fruit-day spectra)
 ```
+
+The colour versions of Figures 3 and 7 are included in `manuscript/figures/`. The complete frozen
+colour-index predictions are available in `manuscript/tables/colour_index_oof.csv`.
 
 See `manuscript/README.md` for the correspondence between scripts, tables and figures of the article.
 
