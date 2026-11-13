@@ -40,7 +40,9 @@ MANUSCRIPT_SCRIPT_DIR = ROOT / "manuscript" / "scripts"
 EXPECTED_MANUSCRIPT_SCRIPTS = [
     "_common.py",
     "check_ridge_reproduction.py",
+    "colour_index_baseline.py",
     "make_figures.py",
+    "make_supplement_tables.py",
     "make_workflow_figure.py",
     "primary_contrasts.py",
     "simplification_vs_final.py",
@@ -66,6 +68,10 @@ EXPECTED_OOF = {
 MANUSCRIPT_TABLES = [
     ROOT / "manuscript" / "tables" / "primary_contrasts_holm_bonferroni.csv",
     ROOT / "manuscript" / "tables" / "simplification_vs_final_full.csv",
+    ROOT / "manuscript" / "tables" / "colour_index_baseline.csv",
+    ROOT / "manuscript" / "tables" / "colour_index_contrasts.csv",
+    *[ROOT / "manuscript" / "tables" / "supplement" / f"Table_S{i}.csv" for i in range(1, 9)],
+    ROOT / "manuscript" / "tables" / "supplement" / "fruits_per_day.csv",
 ]
 MANUSCRIPT_FIGURES = [ROOT / "manuscript" / "figures" / f"Figure_{i}.{ext}" for i in range(1, 10) for ext in ("png", "pdf")]
 RELEASE_FILES = [ROOT / "LICENSE", ROOT / "CITATION.cff", ROOT / "README.md", ROOT / "CHANGELOG.md"]
