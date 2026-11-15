@@ -33,9 +33,9 @@ keywords:
 preferred-citation:
   type: article
   title: "Fruit-Disjoint and Matched-Null Validation of Baseline-Referenced Hyperspectral Models for Tracking Persimmon Storage Time"
-  journal: "SN Computer Science"
+  journal: "Foods"
   publisher:
-    name: "Springer"
+    name: "MDPI"
   authors:
     - family-names: "Delgado-Vera"
       given-names: "Carlota"
@@ -51,4 +51,4 @@ preferred-citation:
     - family-names: "Haro-Sarango"
       given-names: "Alexander"
       affiliation: "Universidad Peruana Unión"
-  notes: "Submitted to SN Computer Science (Springer), as clarified by the author 14 November 2026; editorial decision pending. Publication year, volume, pages and DOI will be added after publication."
+  notes: "Submitted to Foods (MDPI), as clarified by the author 14 November 2026; editorial decision pending. Publication year, volume, pages and DOI will be added after publication."
